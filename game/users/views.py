@@ -1,11 +1,11 @@
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from .serializers import UserSerializer
-from services.user_db import get_or_create_token
 
 
 class LoginView(ObtainAuthToken):
@@ -19,7 +19,7 @@ class LoginView(ObtainAuthToken):
         print(serializer.is_valid())
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            get_or_create_token(user)
+            Token.objects.get_or_create(user=user)
             return Response({'token': user.auth_token.key, 'username': user.username})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
