@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    links:
+      - db:db
+    networks:
+      - backend
+
+  db:
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdbdata: null
+
+networks:
+  backend:
+    driver: bridge
