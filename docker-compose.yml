@@ -5,7 +5,7 @@ services:
     build: .
     ports:
       - "8000:8000"
-    command: python manage.py runserver 0.0.0.0:8000
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py init_db && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     depends_on:
@@ -20,14 +20,15 @@ services:
     env_file:
       - .env
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     networks:
       - backend
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
 
 volumes:
-  pgdbdata: null
+  db:
 
 networks:
   backend:

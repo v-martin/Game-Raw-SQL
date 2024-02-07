@@ -16,7 +16,6 @@ class LoginView(ObtainAuthToken):
     """
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
-        print(serializer.is_valid())
         if serializer.is_valid():
             user = serializer.validated_data['user']
             Token.objects.get_or_create(user=user)

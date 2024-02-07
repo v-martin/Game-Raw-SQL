@@ -16,6 +16,4 @@ WORKDIR /app/game
 
 ENV DJANGO_SETTINGS_MODULE=game.settings
 
-RUN python manage.py migrate
-
-CMD ["gunicorn", "game.game.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD "gunicorn game.game.wsgi:application --bind 0.0.0.0:8000"
