@@ -9,10 +9,10 @@ BEGIN
            (new.id, 3, 0),
            (new.id, 4, 0);
     INSERT INTO play_traderelation (country_id, hub_id)
-    VALUES (new.id, new.id % 100),
-           (new.id, (new.id * 2) % 100),
-           (new.id, (new.id * 3) % 100),
-           (new.id, (new.id * 4) % 100);
+    VALUES (new.id, new.id % 100 + 1),
+           (new.id, (new.id * 2) % 100 + 1),
+           (new.id, (new.id * 3) % 100 + 1),
+           (new.id, (new.id * 4) % 100 + 1);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

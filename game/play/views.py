@@ -19,9 +19,11 @@ class CountryDetailsByTokenView(ListAPIView):
 
 class CreateGameView(APIView):
 
+    @transaction.atomic
     def post(self, request):
         with connections['default'].cursor() as cursor:
             cursor.execute(f"CALL createBotCountries('{request.headers.get('Authorization').split()[-1]}')")
+            cursor.execute(f"CALL createUserCountry('{request.headers.get('Authorization').split()[-1]}', '{request.data.get('countryName')}', '{request.data.get('countryKing')}', )")
 
         return Response({'message': 'Game started successfully'}, status=status.HTTP_200_OK)
 

@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-lx76tb_ck&ur3!g!rw#qpizoo8adm4r$z*d*po)o^pzl$c3tm$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -93,7 +93,8 @@ DATABASES = {
         'NAME': 'game_dbis',
         'USER': 'postgres',
         'PASSWORD': 'martiseva2003',
-        'HOST': 'localhost',
+        # 'HOST': 'localhost'
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
