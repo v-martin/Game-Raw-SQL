@@ -37,7 +37,7 @@ class TradingHubSerializer(serializers.ModelSerializer):
 
 
 class TradeRelationSerializer(serializers.ModelSerializer):
-    hub = serializers.StringRelatedField()
+    hub = TradingHubSerializer(read_only=True)
 
     class Meta:
         model = TradeRelation
@@ -63,7 +63,7 @@ class ConstructionTypeSerializer(serializers.ModelSerializer):
 
 
 class ConstructionSerializer(serializers.ModelSerializer):
-    construction_type = serializers.StringRelatedField()
+    construction_type = ConstructionTypeSerializer(read_only=True)
 
     class Meta:
         model = Construction
