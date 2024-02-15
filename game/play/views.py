@@ -77,7 +77,7 @@ class ConstructionBuyView(APIView):
 
         country = Country.objects.get(pk=country_id)
 
-        Construction.objects.create(level=1, constructions_type=ConstructionType.objects.get(pk=type_id),
+        Construction.objects.create(level=1, construction_type=ConstructionType.objects.get(pk=type_id),
                                     country=country)
 
         country.gold -= 500
