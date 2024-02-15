@@ -98,9 +98,12 @@ class CountryDetailSerializer(serializers.ModelSerializer):
         hub_ids = trading_relations.values_list('hub__id', flat=True)
         hubs = TradingHub.objects.filter(pk__in=hub_ids)
         materials = Material.objects.filter(country=instance)
+        constructions = Construction.objects.filter(country=instance)
+
 
         data['hubs'] = TradingHubWithCostsSerializer(hubs, many=True).data
         data['materials'] = MaterialSerializer(materials, many=True).data
+        data['constructions'] = ConstructionSerializer(constructions, many=True).data
         return data
 
 
