@@ -71,6 +71,8 @@ class ConstructionSerializer(serializers.ModelSerializer):
 
 
 class MaterialSerializer(serializers.ModelSerializer):
+    material_type = MaterialTypeSerializer(read_only=True)
+
     class Meta:
         model = Material
         fields = '__all__'
