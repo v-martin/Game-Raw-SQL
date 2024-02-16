@@ -23,7 +23,8 @@ class CreateGameView(APIView):
     def post(self, request):
         with connections['default'].cursor() as cursor:
             cursor.execute(f"CALL createBotCountries('{request.headers.get('Authorization').split()[-1]}')")
-            cursor.execute(f"SELECT createUserCountry('{request.headers.get('Authorization').split()[-1]}', '{request.data.get('countryName')}', '{request.data.get('countryKing')}')")
+            cursor.execute(
+                f"SELECT createUserCountry('{request.headers.get('Authorization').split()[-1]}', '{request.data.get('countryName')}', '{request.data.get('countryKing')}')")
 
         return Response({'detail': 'Game started successfully'}, status=status.HTTP_200_OK)
 
@@ -51,11 +52,13 @@ class CountrySellMaterialView(APIView):
     def post(self, request, *args, **kwargs):
         country_id = request.data.get('countryId')
         hub_id = request.data.get('hubId')
-        material_id = request.data.get('materialId')
-        size = request.data.get('size')
+        materials = request.data.get('materials')
 
         with connections['default'].cursor() as cursor:
-            cursor.execute(f'SELECT sellMaterial({material_id}, {size}, {country_id}, {hub_id})')
+            for material in materials:
+                if material['amount'] > 0:
+                    cursor.execute(
+                        f'SELECT sellMaterial({material["id"]}, {material["amount"]}, {country_id}, {hub_id})')
 
         return Response({'detail': 'Material sold successfully'}, status=status.HTTP_200_OK)
 
@@ -63,7 +66,7 @@ class CountrySellMaterialView(APIView):
 class ConstructionUpgradeView(APIView):
     def post(self, request, construction_id, *args, **kwargs):
         with connections['default'].cursor() as cursor:
-            cursor.execute(f'SELECT increaseConstructionLevel({request.data.get(construction_id)}, 500)')
+            cursor.execute(f'SELECT increaseConstructionLevel({construction_id}, 500)')
 
         return Response({'detail': 'Construction upgraded successfully'}, status=status.HTTP_200_OK)
 
@@ -105,9 +108,7 @@ class ArmyBuyView(APIView):
 
 
 class ArmyUpgradeView(APIView):
-    def post(self, request, *args, **kwargs):
-        army_id = request.data.get('armyId')
-
+    def post(self, request, army_id, *args, **kwargs):
         with connections['default'].cursor() as cursor:
             cursor.execute(f'SELECT increaseArmyLevel({army_id}, 500)')
 
@@ -124,6 +125,6 @@ class GetResources(APIView):
             for construction in constructions:
                 if material.material_type == construction.construction_type.material_type:
                     material.amount += BASE_MATERIAL_AMOUNT * construction.level
-                    material.save()
+            material.save()
 
         return Response({'detail': 'Resources extracted successfully'}, status=status.HTTP_200_OK)
