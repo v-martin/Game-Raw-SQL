@@ -1,6 +1,9 @@
 from django.db import models
 
 
+BASE_MATERIAL_AMOUNT = 10
+
+
 class CountrySchema(models.Model):
     name = models.CharField(max_length=50, unique=True)
     king = models.CharField(max_length=100)

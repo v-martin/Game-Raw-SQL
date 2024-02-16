@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db import connections, transaction
 
-from .models import Country, War, Construction, Army, ConstructionType
+from .models import Country, War, Construction, Army, ConstructionType, Material, BASE_MATERIAL_AMOUNT
 from .serializers import CountryDetailSerializer
 
 
@@ -25,7 +25,7 @@ class CreateGameView(APIView):
             cursor.execute(f"CALL createBotCountries('{request.headers.get('Authorization').split()[-1]}')")
             cursor.execute(f"SELECT createUserCountry('{request.headers.get('Authorization').split()[-1]}', '{request.data.get('countryName')}', '{request.data.get('countryKing')}')")
 
-        return Response({'message': 'Game started successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Game started successfully'}, status=status.HTTP_200_OK)
 
 
 class CountryWarView(APIView):
@@ -44,7 +44,7 @@ class CountryWarView(APIView):
             else:
                 War.objects.create(loser=client, winner=enemy)
 
-        return Response({'message': 'War initiated successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'detail': 'War initiated successfully'}, status=status.HTTP_201_CREATED)
 
 
 class CountrySellMaterialView(APIView):
@@ -57,7 +57,7 @@ class CountrySellMaterialView(APIView):
         with connections['default'].cursor() as cursor:
             cursor.execute(f'SELECT sellMaterial({material_id}, {size}, {country_id}, {hub_id})')
 
-        return Response({'message': 'Material sold successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Material sold successfully'}, status=status.HTTP_200_OK)
 
 
 class ConstructionUpgradeView(APIView):
@@ -65,7 +65,7 @@ class ConstructionUpgradeView(APIView):
         with connections['default'].cursor() as cursor:
             cursor.execute(f'SELECT increaseConstructionLevel({request.data.get(construction_id)}, 500)')
 
-        return Response({'message': 'Construction upgraded successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Construction upgraded successfully'}, status=status.HTTP_200_OK)
 
 
 class ConstructionBuyView(APIView):
@@ -83,7 +83,7 @@ class ConstructionBuyView(APIView):
         country.gold -= 500
         country.save()
 
-        return Response({'message': 'Construction purchased successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Construction purchased successfully'}, status=status.HTTP_200_OK)
 
 
 class ArmyBuyView(APIView):
@@ -101,14 +101,29 @@ class ArmyBuyView(APIView):
         country.gold -= (500 * count)
         country.save()
 
-        return Response({'message': 'Army purchased successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Army purchased successfully'}, status=status.HTTP_200_OK)
 
 
 class ArmyUpgradeView(APIView):
-    def post(self, request, army_id, *args, **kwargs):
-        army = Army.objects.get(pk=army_id)
+    def post(self, request, *args, **kwargs):
+        army_id = request.data.get('armyId')
 
         with connections['default'].cursor() as cursor:
             cursor.execute(f'SELECT increaseArmyLevel({army_id}, 500)')
 
-        return Response({'message': 'Army purchased successfully'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Army purchased successfully'}, status=status.HTTP_200_OK)
+
+
+class GetResources(APIView):
+    def post(self, request, *args, **kwargs):
+        country_id = request.data.get('countryId')
+        materials = Material.objects.filter(country=country_id).all()
+        constructions = Construction.objects.filter(country=country_id).all()
+
+        for material in materials:
+            for construction in constructions:
+                if material.material_type == construction.construction_type.material_type:
+                    material.amount += BASE_MATERIAL_AMOUNT * construction.level
+                    material.save()
+
+        return Response({'detail': 'Resources extracted successfully'}, status=status.HTTP_200_OK)
