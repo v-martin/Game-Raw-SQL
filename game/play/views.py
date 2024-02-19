@@ -33,19 +33,19 @@ class CountryWarView(APIView):
     def post(self, request, *args, **kwargs):
         client_country_id = request.data.get('clientCountryId')
         enemy_country_id = request.data.get('enemyCountryId')
-
+        winner = 0
         client = Country.objects.get(pk=client_country_id)
         enemy = Country.objects.get(pk=enemy_country_id)
 
         with connections['default'].cursor() as cursor:
             cursor.execute(f"SELECT chooseWarWinner({client_country_id}, {enemy_country_id})")
-            result = cursor.fetchone()
+            result = cursor.fetchone()[0]
             if result == client_country_id:
-                War.objects.create(loser=enemy, winner=client)
+                winner = client_country_id
             else:
-                War.objects.create(loser=client, winner=enemy)
+                winner = enemy_country_id
 
-        return Response({'detail': 'War initiated successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'winner': winner}, status=status.HTTP_201_CREATED)
 
 
 class CountrySellMaterialView(APIView):
