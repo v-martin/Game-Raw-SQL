@@ -115,6 +115,32 @@ class ArmyUpgradeView(APIView):
         return Response({'detail': 'Army purchased successfully'}, status=status.HTTP_200_OK)
 
 
+class BotArmyBuyView(APIView):
+    def post(self, request):
+        country_ids = request.data.get('countryIds')
+
+        armies = Army.objects.filter(country_id__in=country_ids)
+
+        for army in armies:
+            army.size += 1
+            army.save()
+
+        return Response({'detail': 'Armies have been successfully bought'}, status=status.HTTP_200_OK)
+
+
+class BotArmyUpgradeView(APIView):
+    def post(self, request):
+        country_ids = request.data.get('countryIds')
+
+        armies = Army.objects.filter(country_id__in=country_ids)
+
+        for army in armies:
+            army.level += 1
+            army.save()
+
+        return Response({'detail': 'Armies have been successfully upgraded'}, status=status.HTTP_200_OK)
+
+
 class GetResources(APIView):
     def post(self, request, *args, **kwargs):
         country_id = request.data.get('countryId')

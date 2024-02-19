@@ -11,5 +11,7 @@ urlpatterns = [
     path('country/construction/buy', ConstructionBuyView.as_view(), name='construction_buy'),
     path('country/army/buy', ArmyBuyView.as_view(), name='army_buy'),
     path('county/army/upgrade/<int:army_id>', ArmyUpgradeView.as_view(), name='army_upgrade'),
-    path('get-resources', GetResources.as_view(), name='get_resources')
+    path('get-resources', GetResources.as_view(), name='get_resources'),
+    path('bot-army-buy', BotArmyBuyView.as_view(), name='bot-army-buy'),
+    path('bot-army-upgrade', BotArmyUpgradeView.as_view(), name='bot-army-upgrade'),
 ]
